@@ -1,4 +1,3 @@
-
 Async Await
 ===========
 
@@ -21,23 +20,56 @@ function main() {
     multiply(res, 3, function (res) {
       multiply(res, 4, function (res) {
         console.log(res);
-      }
-    }
-  }
+      })
+    })
+  })
 }
-main() // 5
+main() // 24
 ```
 
 We just wrote spaghetti code. Now let's look the same code with ```async```, ```await``` and ```yield```:
 
 ```javascript
-main = async(function () {
-  [res] = yield await(multiply)(1, 2);
+var main = async(function () {
+  var [res] = yield await(multiply)(1, 2);
   [res] = yield await(multiply)(res, 3);
   [res] = yield await(multiply)(res, 4);
   console.log(res);
+});
+main() // 24
+```
+
+Using ```async``` and ```await```, we can easily combine asynchronous functions to write a new one:
+
+```javascript
+var factorial = async(function (n, callback) {
+  var res = 1;
+  for (; n > 0; --n) {
+    [res] = yield await(multiply)(res, n);
+  }
+  callback(res);
+});
+```
+
+We can either use it the old way:
+
+```javascript
+var main = function () {
+  factorial(4, function (res) {
+    console.log(res);
+  })
 }
-main() // 5
+main() // 24
+```
+
+or the new way:
+
+```javascript
+var main = async(function () {
+  var [res] = yield await(factorial)(4);
+  console.log(res);
+});
+main() // 24
 ```
 
 
